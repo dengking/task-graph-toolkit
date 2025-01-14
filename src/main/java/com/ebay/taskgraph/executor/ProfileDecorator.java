@@ -50,7 +50,7 @@ public class ProfileDecorator<T> implements ICallableTask<T> {
     }
 
     static <T> T profileTaskCall(ICallableTask<T> task) {
-        
+
         task.getContext().getProfiler().start();
 
         T rval = null;

@@ -34,7 +34,7 @@ public class TaskThreadLoggingDecorator<T> implements ICallableTask<T> {
     private static final Map<String, String> CURRENT_THREAD_TASK = Collections.synchronizedMap(new HashMap<String, String>());
 
     private final ICallableTask<T> task;
-    private final String parentTask;
+    private final String parentTask; // 上一个运行在本线成的任务
 
     public TaskThreadLoggingDecorator(ICallableTask<T> task) {
         this.task = task;

@@ -18,17 +18,11 @@
 
 package com.ebay.taskgraph.diagnostic;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.ebay.taskgraph.util.JsonHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ebay.taskgraph.util.JsonHelper;
+import java.util.*;
 
 public class Profiler implements IProfiler, IProfilerEntry {
 
@@ -50,10 +44,10 @@ public class Profiler implements IProfiler, IProfilerEntry {
         private long duration = -1L;
 
         private final String name;
-        
+
         /**
          * Additional task specific data associated with the profiler entry.
-         * e.g. task type, dependencies any uncaught exception thrown during task processing.  
+         * e.g. task type, dependencies any uncaught exception thrown during task processing.
          */
         private Map<String, String> data = new LinkedHashMap<>();
 
@@ -113,7 +107,9 @@ public class Profiler implements IProfiler, IProfilerEntry {
         }
     }
 
-    /** the entry that times the overall profiler from instantiation to collection */
+    /**
+     * the entry that times the overall profiler from instantiation to collection
+     */
     private final Entry entry;
 
     /**
@@ -121,7 +117,7 @@ public class Profiler implements IProfiler, IProfilerEntry {
      * synchronized because sometimes tasks share the same response context even though they shouldn't
      */
     private final List<IProfilerEntry> entries = Collections.synchronizedList(new ArrayList<IProfilerEntry>());
-    
+
     public Profiler(String name) {
         this.entry = new Entry(name);
     }
@@ -177,7 +173,7 @@ public class Profiler implements IProfiler, IProfilerEntry {
     public static String getEntryName(String context, String name) {
         if (context != null && context.length() > 0) {
             name = removeDuplicatePath(context, name);
-            name = context + '.' + name; 
+            name = context + '.' + name;
         }
         return name;
     }
@@ -185,6 +181,7 @@ public class Profiler implements IProfiler, IProfilerEntry {
     /**
      * Sometimes the name of the profiler entry already contains part of the context.
      * Remove this duplication.
+     *
      * @param context
      * @param name
      * @return
@@ -194,7 +191,7 @@ public class Profiler implements IProfiler, IProfilerEntry {
         int finalIndex = 0;
         StringBuilder pre = new StringBuilder();
         String remainder = name;
-        int index ;
+        int index;
         while ((index = remainder.indexOf('.')) > 0) {
             pre.append(remainder.substring(0, index));
             if (context.contains(pre.toString())) {
@@ -219,6 +216,12 @@ public class Profiler implements IProfiler, IProfilerEntry {
         return ProfilerNull.INSTANCE;
     }
 
+    /**
+     * 创建一个名称为 entryName 的entry，并且将它加入到 this.entries 中
+     *
+     * @param entryName entry的名称
+     * @return 新创建的entry
+     */
     @Override
     public IProfilerEntry newEntry(String entryName) {
         // prefix every entry name with the parent profiler name
@@ -237,7 +240,7 @@ public class Profiler implements IProfiler, IProfilerEntry {
             // it could mean cyclic reference that would result in an infinite loop
             Map<String, List<Entry>> entries = new HashMap<>();
             validate(entries, this);
-            
+
             // don't log to stdout, it's just as easy to copy from diagnostic output
             //ProfilerModel pm = this.getModel(this.entry.absoluteStartTime);
             //LOGGER.debug(JsonHelper.prettyPrint(pm));
@@ -262,7 +265,7 @@ public class Profiler implements IProfiler, IProfilerEntry {
         List<Entry> exists = entries.get(entry.name);
         if (exists != null) {
             // check entry not currently in the list
-            for (int i = exists.size() - 1; i >= 0 ; --i) {
+            for (int i = exists.size() - 1; i >= 0; --i) {
                 if (exists.get(i) == entry) {
                     // prohibit duplicate entries 
                     throw new RuntimeException("duplicate profiler entry (possible cycle): " + entry.name);
@@ -278,7 +281,8 @@ public class Profiler implements IProfiler, IProfilerEntry {
 
     /**
      * Create a formatted string of the profiler result.
-     * @param requestStart 
+     *
+     * @param requestStart
      */
     private Diagnostic getProfilerDiagnostic(long requestStart) {
 
