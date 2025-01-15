@@ -18,6 +18,9 @@
 
 package com.ebay.taskgraph.diagnostic;
 
+/**
+ * kv
+ */
 public class ProfilerProperty {
 
     private String name;

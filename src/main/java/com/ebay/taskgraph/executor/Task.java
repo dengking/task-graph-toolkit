@@ -51,7 +51,7 @@ public abstract class Task {
     private static final String EXCEPTION_META_DATA_KEY = "exception";
 
     protected final String taskName;
-    protected final ResponseContext context;
+    protected final ResponseContext context; // task context
     protected final ICallableTaskFuture<?>[] dependencies;
 
     // only callable result should care about this, not super classes
@@ -208,6 +208,7 @@ public abstract class Task {
     }
 
     /**
+     * 谁(caller)取你(task)的值，那么你(task)就是(caller)的依赖，这个函数在 CallableTaskFuture.getNoThrow 中被调用
      * Add a dependency to the specified task from the caller.
      */
     public static void addDependency(ICallableTask<?> task, ICallableTask<?> caller) {

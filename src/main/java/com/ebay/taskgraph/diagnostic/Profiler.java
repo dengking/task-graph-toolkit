@@ -24,6 +24,11 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+/**
+ * 它只有两个成员:
+ * 1. entry
+ * 2. entries
+ */
 public class Profiler implements IProfiler, IProfilerEntry {
 
     public static final String PROFILER_DIAGNOSTIC_NAME = "Profiler";
@@ -115,6 +120,7 @@ public class Profiler implements IProfiler, IProfilerEntry {
     /**
      * list of child entries
      * synchronized because sometimes tasks share the same response context even though they shouldn't
+     * children的Profiler
      */
     private final List<IProfilerEntry> entries = Collections.synchronizedList(new ArrayList<IProfilerEntry>());
 

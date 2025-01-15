@@ -41,7 +41,7 @@ public class CallableTaskFuture<RESULT> implements ICallableTaskFuture<RESULT> {
      * Only do the get on the future once.
      */
     private volatile Result<RESULT> result = null;
-    
+
     /**
      * In case the future throws an ApplicationException
      */
@@ -56,12 +56,14 @@ public class CallableTaskFuture<RESULT> implements ICallableTaskFuture<RESULT> {
      * Block and wait for task response.  Handle concurrency & timeout exceptions.
      * Synchronized in case there are multiple dependent tasks that  may call this concurrently.
      * Uses the timeout value from the task configuration.
+     * <p>
+     * 可能有多个dependent tasks that may call this concurrently，因此需要对它进行加锁互斥同步
      */
     @Override
     public synchronized RESULT getNoThrow(ICallableTask<?> caller) {
-
+        // 只有此时，它才能够知道它是谁的依赖
         Task.addDependency(this.task, caller);
-        
+
         if (this.applicationException != null) {
             // first off, propagate application exception so we don't execute synchronous tasks again
             throw this.applicationException;
@@ -87,7 +89,7 @@ public class CallableTaskFuture<RESULT> implements ICallableTaskFuture<RESULT> {
             } catch (Throwable t) {
                 logException(t);
             }
-            
+
             // log the result of the task if diagnostics is enabled specifically for the task
             if (this.task.getTaskConfig().diagnosticConfig.taskDiagnosticEnabled(this.task.getName())) {
                 Task.addTaskResponseDiagnostic(this.task, result);
@@ -123,6 +125,7 @@ public class CallableTaskFuture<RESULT> implements ICallableTaskFuture<RESULT> {
 
     /**
      * Logs any exception to the task.
+     *
      * @param t
      */
     private void logException(Throwable t) {

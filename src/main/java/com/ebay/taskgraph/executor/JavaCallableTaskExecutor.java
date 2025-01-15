@@ -41,21 +41,22 @@ public class JavaCallableTaskExecutor implements ICallableTaskExecutor {
         boolean isAsync = CallableTaskExecutorHelper.isAsync(task);
 
         task = CallableTaskExecutorHelper.getDecoratedTask(this, task);
-        
+
         Future<T> future;
         if (isAsync) {
             future = EXECUTOR.submit(task);
         } else {
             future = new SynchronousFuture<T>(task);
         }
+        // 对jdk对future进行封装
         CallableTaskFuture<T> result = new CallableTaskFuture<T>(future, task);
         this.tasks.put(task.getName(), result);
         return result;
     }
 
     /**
-     * Add all task response contexts to the workflow instance. 
-     * Make sure to call this ONCE AND ONLY ONCE after the workflow execution is done. 
+     * Add all task response contexts to the workflow instance.
+     * Make sure to call this ONCE AND ONLY ONCE after the workflow execution is done.
      * It is assumed that there would be ONLY ONE CLIENT dealing with the workflow object.
      */
     @Override

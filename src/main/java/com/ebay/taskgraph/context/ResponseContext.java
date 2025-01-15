@@ -51,9 +51,9 @@ public class ResponseContext {
 
     private static final String STRING_LIST_TYPE = "STRING_LIST";
 
-    private final IDiagnosticHolder diagnostic;
+    private final IDiagnosticHolder diagnostic; // DiagnosticHolder
 
-    private final IProfiler profiler;
+    private final IProfiler profiler; // Profiler
 
     private final DiagnosticConfig diagnosticConfig;
 
@@ -68,6 +68,7 @@ public class ResponseContext {
 
     /**
      * Any errors that need to be reported should be added here.
+     * task在执行过程中出现的错误
      */
     private ErrorHolder error;
 
